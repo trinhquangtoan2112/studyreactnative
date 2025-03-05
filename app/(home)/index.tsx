@@ -5,6 +5,8 @@ export default function Home() {
   return (
     <View>
       <Text>index</Text>
+      <Text>index</Text>
+      <Text>index</Text>
     </View>
   );
 }

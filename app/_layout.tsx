@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { tokenCache } from "@/cache";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -40,6 +41,7 @@ export default function RootLayout() {
           <SafeAreaView style={{ flex: 1 }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(home)"></Stack.Screen>
+              <Stack.Screen name="(auth)"></Stack.Screen>
               <Stack.Screen name="+not-found" />
             </Stack>
           </SafeAreaView>
