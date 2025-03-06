@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Pressable, Image } from "react-native";
 import React from "react";
 import { IImageButtonProps } from "./type";
-import { Images } from "@/themes/Images";
 
 export default function ImageButton({ imageLink, onPress }: IImageButtonProps) {
   return (
