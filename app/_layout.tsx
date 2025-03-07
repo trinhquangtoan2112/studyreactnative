@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { SafeAreaView, Text } from "react-native";
-import { ClerkLoaded, ClerkLoading, ClerkProvider } from "@clerk/clerk-expo";
-import { tokenCache } from "@/cache";
+import { SafeAreaView } from "react-native";
 import InitialLayout from "@/components/InitialLayout";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { useAuth } from "@clerk/clerk-react";
 import ClerkAndConvexProvider from "@/provider/ClerkAndConvexProvider";
+import { ConvexReactClient } from "convex/react";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
