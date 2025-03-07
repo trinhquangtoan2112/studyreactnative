@@ -1,9 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/themes/Colors";
+import { Keyboard } from "react-native";
 
 export default function HomeLayout() {
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   return (
     <Tabs
       screenOptions={{
@@ -18,6 +34,8 @@ export default function HomeLayout() {
           elevation: 0,
           height: 40,
           paddingBottom: 8,
+          marginTop: 20,
+          display: isKeyboardVisible ? "none" : "flex",
         },
       }}
     >
