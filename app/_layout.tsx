@@ -15,7 +15,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [loaded] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require("@/assets/fonts/JetBrainsMono-Medium.ttf"),
   });
 
   const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {

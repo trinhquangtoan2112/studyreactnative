@@ -1,4 +1,10 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  FlatList,
+} from "react-native";
 import React from "react";
 import { useAuth } from "@clerk/clerk-expo";
 import { styles } from "@/utils/feed.style";
@@ -10,7 +16,6 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Loader from "@/components/Loader";
 import Post from "@/components/Post";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export default function Home() {
   const { signOut } = useAuth();
@@ -18,6 +23,19 @@ export default function Home() {
     signOut();
   };
 
+  const StoriesSection = () => {
+    return (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        horizontal
+        style={styles.storiesContainer}
+      >
+        {STORIES.map((story) => {
+          return <Story key={story.id} story={story}></Story>;
+        })}
+      </ScrollView>
+    );
+  };
   const post = useQuery(api.posts.getFeedPosts);
   if (post === undefined) return <Loader></Loader>;
   // if (post.length === 0) return <NotFound></NotFound>;
@@ -35,7 +53,7 @@ export default function Home() {
         </TouchableOpacity>
       </View>
       {/* body */}
-      <ScrollView
+      {/* <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
       >
@@ -49,7 +67,18 @@ export default function Home() {
           })}
         </ScrollView>
         {post?.map((post) => <Post key={post._id} post={post}></Post>)}
-      </ScrollView>
+      </ScrollView> */}
+
+      <FlatList
+        data={post}
+        renderItem={({ item }) => {
+          return <Post post={item}></Post>;
+        }}
+        keyExtractor={(item) => item._id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 60 }}
+        ListHeaderComponent={<StoriesSection />}
+      ></FlatList>
     </View>
   );
 }
