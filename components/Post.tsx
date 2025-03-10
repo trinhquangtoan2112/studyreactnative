@@ -7,9 +7,12 @@ import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "@/themes/Colors";
 import { Id } from "@/convex/_generated/dataModel";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import CommentModal from "./CommentModal";
+import { formatDistanceToNow } from "date-fns";
+import { useUser } from "@clerk/clerk-react";
+import { deletePost } from "@/convex/posts";
 
 interface Props {
   post: {
@@ -35,7 +38,16 @@ export default function Post({ post }: Props) {
   const [likeCount, setLikeCount] = useState<number>(post.likes);
   const [commentCount, setCommentCount] = useState<number>(post.comment);
   const [showComment, setShowComment] = useState<boolean>(false);
+  const [isBookmark, setIsBookmark] = useState<boolean>(false);
   const toggleLike = useMutation(api.posts.toggleLike);
+  const toggleBookmark = useMutation(api.Bookmarks.toggleBookmark);
+  const deletePost = useMutation(api.posts.deletePost);
+  const { user } = useUser();
+  console.log(user);
+  const currentUser = useQuery(
+    api.users.getUserByClerkId,
+    user ? { clerkId: user?.id } : "skip"
+  );
   const handleLike = async () => {
     try {
       const newsIsLiked = await toggleLike({ postId: post._id });
@@ -46,7 +58,20 @@ export default function Post({ post }: Props) {
       console.log(error);
     }
   };
+  const handleBookmark = async () => {
+    try {
+      const newIsBookmark = await toggleBookmark({ postId: post._id });
+      setIsBookmark(newIsBookmark);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
+  const handleDelete = async () => {
+    try {
+      await deletePost({ postId: post._id });
+    } catch (error) {}
+  };
   return (
     <View style={styles.post}>
       <View style={styles.postHeader}>
@@ -63,20 +88,23 @@ export default function Post({ post }: Props) {
           </TouchableOpacity>
         </Link>
 
-        {/* <TouchableOpacity>
-          <Ionicons
-            name="ellipsis-horizontal"
-            size={20}
-            color={COLORS.white}
-          ></Ionicons>
-        </TouchableOpacity> */}
-        <TouchableOpacity>
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color={COLORS.primary}
-          ></Ionicons>
-        </TouchableOpacity>
+        {post.author._id === currentUser?._id ? (
+          <TouchableOpacity onPress={handleDelete}>
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color={COLORS.primary}
+            ></Ionicons>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity>
+            <Ionicons
+              name="ellipsis-horizontal"
+              size={20}
+              color={COLORS.white}
+            ></Ionicons>
+          </TouchableOpacity>
+        )}
 
         {/* Image */}
       </View>
@@ -104,11 +132,11 @@ export default function Post({ post }: Props) {
             ></Ionicons>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleBookmark}>
           <Ionicons
-            name="bookmark-outline"
+            name={isBookmark ? "bookmark" : "bookmark-outline"}
             size={22}
-            color={COLORS.white}
+            color={isBookmark ? COLORS.primary : COLORS.white}
           ></Ionicons>
         </TouchableOpacity>
       </View>
@@ -126,11 +154,16 @@ export default function Post({ post }: Props) {
             <Text style={styles.captionText}>{post.caption}</Text>
           </View>
         )}
-        <TouchableOpacity>
-          <Text style={styles.commentText}>View all 3 comments</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.timeAgo}>2 hours ago</Text>
+        {commentCount > 0 && (
+          <TouchableOpacity onPress={() => setShowComment(true)}>
+            <Text style={styles.commentText}>
+              View all {commentCount} comments
+            </Text>
+          </TouchableOpacity>
+        )}
+        <Text style={styles.timeAgo}>
+          {formatDistanceToNow(post._creationTime, { addSuffix: true })}
+        </Text>
       </View>
 
       <CommentModal

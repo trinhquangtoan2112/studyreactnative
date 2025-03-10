@@ -37,9 +37,8 @@ export default defineSchema({
   }).index("by_post", ["postId"]),
 
   bookmarks: defineTable({
-    postId: v.id("posts"),
     userId: v.id("users"),
-    content: v.string(),
+    postId: v.id("posts"),
   })
     .index("by_user", ["userId"])
     .index("by_post", ["postId"])
