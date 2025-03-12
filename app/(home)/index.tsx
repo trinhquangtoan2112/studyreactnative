@@ -4,8 +4,10 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  RefreshControlBase,
+  RefreshControl,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useAuth } from "@clerk/clerk-expo";
 import { styles } from "@/utils/feed.style";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,8 +21,19 @@ import Post from "@/components/Post";
 
 export default function Home() {
   const { signOut } = useAuth();
+
+  const [refreshing, setRefresh] = useState(false);
+
   const handlerSignOut = () => {
     signOut();
+  };
+
+  const onRefresh = async () => {
+    setRefresh(true);
+
+    setTimeout(() => {
+      setRefresh(false);
+    }, 5000);
   };
 
   const StoriesSection = () => {
@@ -38,7 +51,7 @@ export default function Home() {
   };
   const post = useQuery(api.posts.getFeedPosts);
   if (post === undefined) return <Loader></Loader>;
-  // if (post.length === 0) return <NotFound></NotFound>;
+  if (post.length === 0) return <NotFound></NotFound>;
   return (
     <View style={styles.container}>
       {/* header */}
@@ -78,7 +91,28 @@ export default function Home() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 60 }}
         ListHeaderComponent={<StoriesSection />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={COLORS.primary}
+          />
+        }
       ></FlatList>
+    </View>
+  );
+}
+function NotFound() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.background,
+      }}
+    >
+      <Text style={{ color: COLORS.primary, fontSize: 22 }}>No posts</Text>
     </View>
   );
 }

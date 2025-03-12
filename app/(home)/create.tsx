@@ -26,7 +26,7 @@ export default function Create() {
   const [caption, setCaption] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState<boolean>(false);
-  console.log(221);
+
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -35,8 +35,6 @@ export default function Create() {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
@@ -78,11 +76,7 @@ export default function Create() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => {
-              console.log(1122);
-            }}
-          >
+          <TouchableOpacity>
             <Ionicons
               name="arrow-back"
               size={28}

@@ -9,8 +9,6 @@ http.route({
   path: "/clerk-webhooks",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    console.log(214441224);
-
     const webhookSecret = process.env.CLERK_WEBHOOK_SECERT;
     console.log(webhookSecret, "webhookSecret");
 

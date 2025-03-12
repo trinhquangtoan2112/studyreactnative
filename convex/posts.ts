@@ -137,7 +137,14 @@ export const deletePost = mutation({
     for (const like of likes) {
       await ctx.db.delete(like._id);
     }
+    const notifications = await ctx.db
+      .query("notification")
+      .withIndex("by_posts", (q) => q.eq("postId", args.postId))
+      .collect();
 
+    for (const notification of notifications) {
+      await ctx.db.delete(notification._id);
+    }
     const comments = await ctx.db
       .query("comments")
       .withIndex("by_post", (q) => q.eq("postId", args.postId))
@@ -154,5 +161,24 @@ export const deletePost = mutation({
     await ctx.db.patch(currentUser._id, {
       posts: Math.max(0, (currentUser.posts || 1) - 1),
     });
+  },
+});
+
+export const getPostByUser = query({
+  args: {
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const user = args.userId
+      ? await ctx.db.get(args.userId)
+      : await getAuthenticatedUser(ctx);
+    if (!user) throw new Error("User not found.");
+
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_user", (q) => q.eq("userID", args.userId || user._id))
+      .collect();
+
+    return posts;
   },
 });

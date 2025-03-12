@@ -6,11 +6,7 @@ import { Text, View } from "react-native";
 export default function DebugClerk() {
   const { isLoaded, isSignedIn, userId } = useAuth();
 
-  useEffect(() => {
-    console.log("🔄 Clerk Loaded:", isLoaded);
-    console.log("✅ User ID:", userId);
-    console.log("🔑 Signed In:", isSignedIn);
-  }, [isLoaded, isSignedIn, userId]);
+  useEffect(() => {}, [isLoaded, isSignedIn, userId]);
 
   return (
     <View>

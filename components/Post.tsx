@@ -12,7 +12,6 @@ import { api } from "@/convex/_generated/api";
 import CommentModal from "./CommentModal";
 import { formatDistanceToNow } from "date-fns";
 import { useUser } from "@clerk/clerk-react";
-import { deletePost } from "@/convex/posts";
 
 interface Props {
   post: {
@@ -35,15 +34,14 @@ interface Props {
 
 export default function Post({ post }: Props) {
   const [isLiked, setIsLiked] = useState<boolean>(post.isLiked);
-  const [likeCount, setLikeCount] = useState<number>(post.likes);
-  const [commentCount, setCommentCount] = useState<number>(post.comment);
+
   const [showComment, setShowComment] = useState<boolean>(false);
   const [isBookmark, setIsBookmark] = useState<boolean>(false);
   const toggleLike = useMutation(api.posts.toggleLike);
   const toggleBookmark = useMutation(api.Bookmarks.toggleBookmark);
   const deletePost = useMutation(api.posts.deletePost);
   const { user } = useUser();
-  console.log(user);
+
   const currentUser = useQuery(
     api.users.getUserByClerkId,
     user ? { clerkId: user?.id } : "skip"
@@ -52,8 +50,6 @@ export default function Post({ post }: Props) {
     try {
       const newsIsLiked = await toggleLike({ postId: post._id });
       setIsLiked(newsIsLiked);
-
-      setLikeCount((prev) => (newsIsLiked ? prev + 1 : prev - 1));
     } catch (error) {
       console.log(error);
     }
@@ -70,12 +66,21 @@ export default function Post({ post }: Props) {
   const handleDelete = async () => {
     try {
       await deletePost({ postId: post._id });
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <View style={styles.post}>
       <View style={styles.postHeader}>
-        <Link href={"/(home)/notification"}>
+        <Link
+          href={
+            currentUser?._id === post.author._id
+              ? "/(home)/profile"
+              : `/user/${post.author._id}`
+          }
+          asChild
+        >
           <TouchableOpacity style={styles.postHeaderLeft}>
             <Image
               source={post.author.image}
@@ -144,8 +149,8 @@ export default function Post({ post }: Props) {
       {/* POST INFO */}
       <View style={styles.postInfo}>
         <Text style={styles.likesText}>
-          {likeCount > 0
-            ? `${likeCount.toLocaleString()} likes`
+          {post.likes > 0
+            ? `${post.likes.toLocaleString()} likes`
             : "Be the first to like"}
         </Text>
         {post.caption && (
@@ -154,10 +159,10 @@ export default function Post({ post }: Props) {
             <Text style={styles.captionText}>{post.caption}</Text>
           </View>
         )}
-        {commentCount > 0 && (
+        {post.comment > 0 && (
           <TouchableOpacity onPress={() => setShowComment(true)}>
             <Text style={styles.commentText}>
-              View all {commentCount} comments
+              View all {post.comment} comments
             </Text>
           </TouchableOpacity>
         )}
@@ -170,7 +175,6 @@ export default function Post({ post }: Props) {
         postId={post._id}
         visible={showComment}
         onClose={() => setShowComment(false)}
-        onCommentAdded={() => setCommentCount((prev) => prev + 1)}
       ></CommentModal>
     </View>
   );

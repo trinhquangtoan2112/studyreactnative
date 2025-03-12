@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
@@ -8,7 +8,7 @@ import { SafeAreaView } from "react-native";
 import InitialLayout from "@/components/InitialLayout";
 import ClerkAndConvexProvider from "@/provider/ClerkAndConvexProvider";
 import { ConvexReactClient } from "convex/react";
-
+import { StatusBar } from "expo-status-bar";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -22,22 +22,21 @@ export default function RootLayout() {
     unsavedChangesWarning: false,
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
+  const onLayoutRootView = useCallback(async () => {
+    if (loaded) await SplashScreen.hideAsync();
   }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
   return (
     <ClerkAndConvexProvider>
+      {/* <StatusBar backgroundColor={"#000"}></StatusBar> */}
       <SafeAreaProvider>
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#000" }}>
+        <SafeAreaView
+          style={{ flex: 1, backgroundColor: "#000" }}
+          onLayout={onLayoutRootView}
+        >
           <InitialLayout></InitialLayout>
         </SafeAreaView>
       </SafeAreaProvider>
+      <StatusBar style="black" />
     </ClerkAndConvexProvider>
   );
 }
