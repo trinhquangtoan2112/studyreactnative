@@ -4,11 +4,11 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, StatusBar } from "react-native";
 import InitialLayout from "@/components/InitialLayout";
 import ClerkAndConvexProvider from "@/provider/ClerkAndConvexProvider";
 import { ConvexReactClient } from "convex/react";
-import { StatusBar } from "expo-status-bar";
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -27,16 +27,19 @@ export default function RootLayout() {
   }, [loaded]);
   return (
     <ClerkAndConvexProvider>
-      {/* <StatusBar backgroundColor={"#000"}></StatusBar> */}
+      <StatusBar
+        backgroundColor={"#000"}
+        barStyle={"light-content"}
+      ></StatusBar>
       <SafeAreaProvider>
         <SafeAreaView
           style={{ flex: 1, backgroundColor: "#000" }}
           onLayout={onLayoutRootView}
         >
+          {/* <StatusBar style="auto" /> */}
           <InitialLayout></InitialLayout>
         </SafeAreaView>
       </SafeAreaProvider>
-      <StatusBar style="black" />
     </ClerkAndConvexProvider>
   );
 }
